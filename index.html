@@ -145,12 +145,43 @@ recipe = cc -o %{target} %{o}
 					<h2>Produce: rule attributes</h2>
 					<!-- TODO task example -->
 					<ul>
-						<ul>with special meaning: <code>target</code>, <code>cond</code>,
-						<code>deps</code>, <code>dep.*</code>, <code>type</code></ul>
-						<ul><code>type</code> is <code>file</code> (default) or
-						<code>task</code></ul>
-						<ul>without special meaning: values assigned by matching
-						or explicitly</ul>
+						<li>with special meaning: <code>target</code>, <code>cond</code>,
+						<code>deps</code>, <code>dep.*</code>, <code>type</code></li>
+						<li><code>type</code> is <code>file</code> (default) or
+						<code>task</code></li>
+						<li>without special meaning: values assigned by matching
+						or explicitly</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Design goal: low barrier for users</h2>
+					<ul>
+						<li>simple, intuitive syntax</li>
+						<li>one file, just drop it in <code>$PATH</code></li>
+					</ul>
+					<aside class="notes">After all, I’m competing with Make here
+					which has the enormous advantage of coming with every Unix-like
+					system.</aside>
+				</section>
+
+				<section>
+					<h2>Design goal: low development cost</h2>
+					Should not take too much of my time…
+				</section>
+
+				<section>
+					<h2>Why Python?</h2>
+					<ul>
+						<li>no compilation needed</li>
+						<li>rich standard library
+							<ul>
+								<li><code>argparse</code> for command-line options</li>
+								<li><code>configparser</code> and <code>shlex</code> for parsing Producefiles</li>
+								<li><code>subprocess</code> for executing recipes</li>
+								<li><code>logging</code> for info and debugging</li>
+							</ul>
+						</li>
 					</ul>
 				</section>
 			</div>
