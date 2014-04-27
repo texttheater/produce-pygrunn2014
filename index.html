@@ -121,10 +121,10 @@ recipe = cc -o %{target} %{o}
 					<!-- TODO example -->
 				</section>
 
-				<!-- TODO have to implement this and, harder, find a good example -->
-				<!--<section> 
+				<section> 
 					<h2>…or matching conditions.</h2>
-				</section>-->
+					<!-- TODO example -->
+				</section>
 
 				<section>
 					<h2>Make: arcane string manipulation</h2>
@@ -142,13 +142,15 @@ recipe = cc -o %{target} %{o}
 				</section>
 
 				<section>
-					<h2>Produce: rule variables</h2>
+					<h2>Produce: rule attributes</h2>
 					<!-- TODO task example -->
 					<ul>
-						<li>special variable <em>type</em>:
-						<code>file</code> (default) or <code>task</code></li>
-						<li>special variable <em>target</em></li>
-						<li>user-defined variables: by matching or by attribute</li>
+						<ul>with special meaning: <code>target</code>, <code>cond</code>,
+						<code>deps</code>, <code>dep.*</code>, <code>type</code></ul>
+						<ul><code>type</code> is <code>file</code> (default) or
+						<code>task</code></ul>
+						<ul>without special meaning: values assigned by matching
+						or explicitly</ul>
 					</ul>
 				</section>
 			</div>
