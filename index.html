@@ -140,10 +140,9 @@ $(OUTPUT)%.pos : $(OUTPUT)%.pos.noncorr $(OUTPUT)%.db $(BOWS_TAGS)
 					target in order to generate dependencies.</aside>
 					<h2>Make: a single wildcard (2)</h2>
 					<pre><code data-trim>
-<!-- TODO secondary expansion needed? -->
-<!-- TODO doesn't work -->
-out/%.labeled : $(subst .dev.,.train.,$(subst .test.,.train.,%).model $(basename %).feat
-	wapiti label -m $(subst .dev.,.train.,$(subst .test.,.train.,%).model $&lt; | sed -e 's/\t/ /g' &gt; $@
+.SECONDEXPANSION:
+out/%.labeled : out/$$(subst test,train,$$(subst dev,train,$$*)).model out/$$(basename $$*).feat
+        wapiti label -m $< out/$(basename $*).feat | sed -e 's/\t/ /g' > $@
 					</code></pre>
 					<aside class="notes">after getting this to work, you feel smart,
 					and hopefully also miserable about the brain cycles wasted</aside>
@@ -286,9 +285,9 @@ end
 							<li>determine target type: <code>file</code> or <code>task</code></li>
 							<li>determine whether target is <em>missing</em></li>
 							<li>determine target <em>time</em></li>
-							<li>determine whether target is <em>out fo date</em></li>
+							<li>determine whether target is <em>out of date</em></li>
 						</ol>
-						<aside class="note">for the last four things, we need to
+						<aside class="notes">for the last four things, we need to
 						have dependencies processed before, this is why we need
 						this extra phase before actually starting to
 						build</aside>
@@ -297,7 +296,7 @@ end
 						<h2>Phase 2: produce</h2>
 						For each target requested by user, call
 						<code>build_if_necessary(target)</code>:
-						<pre><code>
+						<pre><code data-trim>
 def build_if_necessary(target):
     if target in out_of_date or target in missing:
         build(target)
