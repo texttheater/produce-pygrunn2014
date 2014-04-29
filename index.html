@@ -87,7 +87,10 @@ recipe = cc -o %{target} %{o}
 
 				<section>
 					<h2>Make: only first prerequisite named</h2>
-					<!-- TODO example -->
+					<pre><code data-trim>
+out/%.pos : out/%.pos.noncorr out/%.offset
+	./src/scripts/apply_corrections $&lt; --offsets out/$*.offset &gt; $@
+					</code></pre>
 					<ul>
 						<li>DRY violation</li>
 					</ul>
@@ -95,25 +98,68 @@ recipe = cc -o %{target} %{o}
 
 				<section>
 					<h2>Produce: name prerequisites</h2>
-					<!-- TODO example with dep. -->
+					<pre><code data-trim>
+[out/%{name}.pos]
+dep.noncorr = %{name}.pos.noncorr
+dep.offset = %{name}.offset
+recipe = ./src/scripts/apply_corrections %{noncorr} --offset %{offset} &gt; %{target} 
+					</code></pre>
 				</section>
 
 				<section>
 					<h2>You don’t <em>have</em> to name them</h2>
-					<!-- TODO example where recipe needs only the base name (pdflatex and bibtex) -->
+					<pre><code data-trim><!-- FIXME not recognized by highlight.js, perhaps because of leading tabs? -->
+[%{name}.pdf]
+deps = %{name}.tex bibliography.bib
+recipe =
+	pdflatex %{name}
+	bibtex %{name}
+	pdflatex %{name}
+	pdflatex %{name}
+					</code></pre>
 				</section>
 
 				<section>
-					<h2>Make: a single wildcard</h2>
-					<!-- TODO blood-curling example, perhaps from GMB Makefile with part and doc -->
+					<h2>Make: a single wildcard (1)</h2>
+					<pre><code data-trim>
+# apply POS BOWs
+$(OUTPUT)%.pos : $(OUTPUT)%.pos.noncorr $(OUTPUT)%.db $(BOWS_TAGS)
+        part=$$(echo $&lt; | sed 's/.*p\([0-9][0-9]\).*/\1/') ;\
+        docid=$$(echo $&lt; | sed 's/.*d\([0-9][0-9][0-9][0-9]\).*/\1/') ;\
+        $(BOWS_TAGS) -c $(CONFIG)/config.ini -y pos -i $&lt; -t $(OUTPUT)$*.tok.off -o $@ -p $$part -d $$docid 2&gt; $@.log
+					</code></pre>
 					<ul>
 						<li>also: $$ everywhere</li>
+					</ul>
+					<aside class="notes">this is an actual production example:
+					passing specific parts of target to a script in recipe</aside>
+				</section>
+
+				<section>
+					<aside class="notes">It gets worse when we need to analyze the
+					target in order to generate dependencies.</aside>
+					<h2>Make: a single wildcard (2)</h2>
+					<pre><code data-trim>
+<!-- TODO secondary expansion needed? -->
+<!-- TODO doesn't work -->
+out/%.labeled : $(subst .dev.,.train.,$(subst .test.,.train.,%).model $(basename %).feat
+	wapiti label -m $(subst .dev.,.train.,$(subst .test.,.train.,%).model $&lt; | sed -e 's/\t/ /g' &gt; $@
+					</code></pre>
+					<aside class="notes">after getting this to work, you feel smart,
+					and hopefully also miserable about the brain cycles wasted</aside>
+					<ul>
+						<li>also: % vs. $* confusion</li>
 					</ul>
 				</section>
 
 				<section>
 					<h2>Produce: any number of wildcards…</h2>
-					<!-- TODO example -->
+					<pre><code data-trim>
+[out/%{corpus}.%{portion}.%{fset}.labeled]
+dep.model = out/%{corpus}.train.%{fset}.model
+dep.input = out/%{corpus}.%{portion}.feat
+recipe = wapiti label -m %{model} %{input} | sed -e 's/\t/ /g' &gt; %{target}
+					</code></pre>
 				</section>
 
 				<section>
