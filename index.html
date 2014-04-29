@@ -166,6 +166,37 @@ recipe = cc -o %{target} %{o}
 				</section>
 
 				<section>
+					<h2>Design goal: do one thing, and do it well</h2>
+					<ul>
+						<li>thin layer over shell code</li>
+						<li>don’t be a framework</li>
+					</ul>
+					<aside class="notes">After all, I’m competing with Make here
+					which has the enormous advantage of coming with every Unix-like
+					system.</aside>
+				</section>
+
+				<section>
+					<section>
+						<h2>But wait, there is already…!</h2>
+					</section>
+					<!-- other runners-up: Waf? SCons? -->
+					<section>
+						<h2>Rake</h2>
+						<pre><code data-trim>
+# Compile
+rule '.o' =&lt; ['.c'] do |t|
+  sh "cc -c #{t.source}"
+end
+						</code></pre>
+						<ul>
+							<li>too much syntax</li>
+							<li>no multiple wildcards (just regex)</li>
+						</ul>
+					</section>
+				</section>
+
+				<section>
 					<h2>Design goal: low development cost</h2>
 					Should not take too much of my time…
 				</section>
@@ -183,6 +214,74 @@ recipe = cc -o %{target} %{o}
 							</ul>
 						</li>
 					</ul>
+				</section>
+
+				<section>
+					<section>
+						<h2>The build algorithm</h2>
+						<aside class="note">surprisingly, description not easy to find</aside>
+					</section>
+					<section>
+						<h2>Desiderata</h2>
+						<ul>
+							<li>automatically run all commands to produce requested target</li>
+							<li>don’t build files that are already up-to-date (timestamp)</li>
+							<li>allow for deleting intermediate files without affecting up-to-dateness</li>
+						</ul>
+					</section>
+					<section>
+						<h2>Phase 1: build dependency graph, gather info</h2>
+						Starting from targets requested by user, for each target,
+						<ol>
+							<li>fail on cyclic dependency</li>
+							<li>stop if target already seen</li>
+							<li>determine which rule to use (first that matches)</li>
+							<li>list direct dependencies, process them recursively</li>
+							<li>determine target type: <code>file</code> or <code>task</code></li>
+							<li>determine whether target is <em>missing</em></li>
+							<li>determine target <em>time</em></li>
+							<li>determine whether target is <em>out fo date</em></li>
+						</ol>
+					</section>
+					<section>
+						<h2>Phase 2: produce</h2>
+						For each target requested by user, call
+						<code>build_if_necessary(target)</code>:
+						<pre><code>
+def build_if_necessary(target):
+    if target in out_of_date or target in missing:
+        build(target)
+
+def build(target):
+    for dd in direct_dependencies[target]:
+        build_if_necessary(dd)
+    run_recipe(target)
+    out_of_date.discard(target)
+    missing.discard(target)
+
+						</code></pre>
+					</section>
+					<section>
+						<h2>“Missing”?</h2>
+						A target is <em>missing</em> iff its type is <code>file</code>
+						and it does not exist.
+					</section>
+					<section>
+						<h2>“Out of date”?</h2>
+						A target is out of date if any of these conditions hold:
+						<ul>
+							<li>its type is <code>task</code></li>
+							<li>some direct dependency is newer</li>
+							<li>some direct dependency is out of date</li>
+							<li>the “always build” option is on</li>
+						</ul>
+					</section>
+					<section>
+						<h2>“Newer”?</h2>
+						<p>The time of a task is <code>0</code>.</p>
+						<p>The time of a missing file is the time of its newest direct dependency (or <code>0</code> if none).</p>
+						<p>The time of an existing file is its last-modified time.</p>
+					</section>
 				</section>
 			</div>
 
