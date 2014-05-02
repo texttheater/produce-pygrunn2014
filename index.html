@@ -25,6 +25,16 @@
 				background-size: contain;
 				display: inline-block;
 			}
+			.reveal section img {
+				border: none;
+				background: none;
+				box-shadow: none;
+			}
+			.reveal a:hover img {
+				border: none;
+				background: none;
+				box-shadow: none;
+			}
 		</style>
 
 		<!-- For syntax highlighting -->
@@ -51,6 +61,42 @@
 					<h3>Makefiles without the annoying bits</h3>
 					<p><a href="http://kilian.evang.name/">http://kilian.evang.name/</a></p>
 					<a href="http://www.pygrunn.org/" class="pygrunn-logo"></a>
+				</section>
+
+				<section>
+					<h2>Build automation: the classic case</h2>
+					<img src="img/compiling.png"/>
+				</section>
+
+				<section>
+					<h2>Build automation: NLP pipeline</h2>
+					<p><img src="img/pipeline.png"/></p>
+					<p><a href="http://gmb.let.rug.nl/"><img src="img/gmb_logo.png"/></a></p>
+				</section>
+
+				<section>
+					<h2>Build automation: running machine learning experiments</h2>
+					<img src="img/ml.png"/>
+				</section>
+
+				<section>
+					<h2>What’s great about Makefiles</h2>
+					<ul>
+						<li>power of shell scripts + dependency management</li>
+						<li>file name wildcards: abstract over multiple objects/documents/experiments…</li>
+						<li>declarative &rarr; self-documenting</li>
+						<li>widespread &rarr; suitable for distribution and replication</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>What’s not so great</h2>
+					<ul>
+						<li>arcane syntax</li>
+						<li>wildcards quite limited</li>
+					</ul>
+					<p>&nbsp;</p>
+					<p>Produce to the rescue!</p>
 				</section>
 
 				<section>
@@ -88,27 +134,25 @@ recipe = cc -o %{target} %{o}
 				<section>
 					<h2>Make: only first prerequisite named</h2>
 					<pre><code data-trim>
-out/%.pos : out/%.pos.noncorr out/%.offset
-	./src/scripts/apply_corrections $&lt; --offsets out/$*.offset &gt; $@
+out/%.pos : out/%.pos.auto out/%.pos.corr
+	./src/scripts/apply_corrections $&lt; --corrections out/$*.pos.corr &gt; $@
 					</code></pre>
-					<ul>
-						<li>DRY violation</li>
-					</ul>
+					DRY violation!
 				</section>
 
 				<section>
 					<h2>Produce: name prerequisites</h2>
 					<pre><code data-trim>
 [out/%{name}.pos]
-dep.noncorr = %{name}.pos.noncorr
-dep.offset = %{name}.offset
-recipe = ./src/scripts/apply_corrections %{noncorr} --offset %{offset} &gt; %{target} 
+dep.auto = %{name}.pos.auto
+dep.corr = %{name}.pos.corr
+recipe = ./src/scripts/apply_corrections %{auto} %{corr} &gt; %{target} 
 					</code></pre>
 				</section>
 
 				<section>
-					<h2>You don’t <em>have</em> to name them</h2>
-					<pre><code data-trim><!-- FIXME not recognized by highlight.js, perhaps because of leading tabs? -->
+					<h2>You don’t <em>have</em> to name them</h2><!-- FIXME continuation lines not marked up by highlight.js -->
+					<pre><code data-trim>
 [%{name}.pdf]
 deps = %{name}.tex bibliography.bib
 recipe =
@@ -119,6 +163,7 @@ recipe =
 					</code></pre>
 				</section>
 
+<!--
 				<section>
 					<h2>Make: a single wildcard (1)</h2>
 					<pre><code data-trim>
@@ -134,21 +179,20 @@ $(OUTPUT)%.pos : $(OUTPUT)%.pos.noncorr $(OUTPUT)%.db $(BOWS_TAGS)
 					<aside class="notes">this is an actual production example:
 					passing specific parts of target to a script in recipe</aside>
 				</section>
+-->
 
 				<section>
 					<aside class="notes">It gets worse when we need to analyze the
 					target in order to generate dependencies.</aside>
-					<h2>Make: a single wildcard (2)</h2>
+					<h2>Make: a single wildcard</h2>
 					<pre><code data-trim>
 .SECONDEXPANSION:
 out/%.labeled : out/$$(subst test,train,$$(subst dev,train,$$*)).model out/$$(basename $$*).feat
-        wapiti label -m $< out/$(basename $*).feat | sed -e 's/\t/ /g' > $@
+        wapiti label -m $< out/$(basename $*).feat > $@
 					</code></pre>
 					<aside class="notes">after getting this to work, you feel smart,
 					and hopefully also miserable about the brain cycles wasted</aside>
-					<ul>
-						<li>also: % vs. $* confusion</li>
-					</ul>
+					<!-- also: % vs. $* confusion -->
 				</section>
 
 				<section>
@@ -157,38 +201,49 @@ out/%.labeled : out/$$(subst test,train,$$(subst dev,train,$$*)).model out/$$(ba
 [out/%{corpus}.%{portion}.%{fset}.labeled]
 dep.model = out/%{corpus}.train.%{fset}.model
 dep.input = out/%{corpus}.%{portion}.feat
-recipe = wapiti label -m %{model} %{input} | sed -e 's/\t/ /g' &gt; %{target}
+recipe = wapiti label -m %{model} %{input} &gt; %{target}
 					</code></pre>
 				</section>
 
+<!-- TODO make sure the following two examples actually work -->
+
 				<section>
-					<h2>…or even regular expressions…</h2>
-					<!-- TODO example -->
+					<h2>…or even regular expressions…</h2> <!-- TODO section header not highlighted properly -->
+					<pre><code data-trim>
+[/out/(?P&lt;corpus&gt;.*)\.(?P&lt;portion&gt;dev|test)\.(?P&lt;fset&gt;.*)\.labeled/]
+dep.model = out/%{corpus}.train.%{fset}.model
+dep.input = out/%{corpus}.%{portion}.feat
+recipe = wapiti label -m %{model} %{input} &gt; %{target}
+					</code></pre>
 				</section>
 
 				<section> 
 					<h2>…or matching conditions.</h2>
-					<!-- TODO example -->
+					<pre><code data-trim>
+[out/%{corpus}.%{portion}.%{fset}.labeled]
+cond = %{portion in ('dev', 'test')}
+dep.model = out/%{corpus}.train.%{fset}.model
+dep.input = out/%{corpus}.%{portion}.feat
+recipe = wapiti label -m %{model} %{input} &gt; %{target}
+					</code></pre>
 				</section>
 
 				<section>
-					<h2>Make: arcane string manipulation</h2>
-					<!-- TODO example -->
-				</section>
-
-				<section>
-					<h2>Produce: just write Python</h2>
-					<!-- TODO example, with numbers -->
-				</section>
-
-				<section>
-					<h2>Make: counterintuitive declarations</h2>
-					<!-- TODO: .PHONY example -->
+					<h2>Make: counterintuitive declarations (special targets)</h2>
+					<pre><code data-trim>
+.PHONY: clean
+clean:
+	rm *.o temp
+					</code></pre>
 				</section>
 
 				<section>
 					<h2>Produce: rule attributes</h2>
-					<!-- TODO task example -->
+					<pre><code data-trim>
+[vacuum]
+type = task
+recipe = rm *.o temp
+					</code></pre>
 					<ul>
 						<li>with special meaning: <code>target</code>, <code>cond</code>,
 						<code>deps</code>, <code>dep.*</code>, <code>type</code></li>
@@ -200,10 +255,40 @@ recipe = wapiti label -m %{model} %{input} | sed -e 's/\t/ /g' &gt; %{target}
 				</section>
 
 				<section>
+					<h2>Make: a handful of functions</h2>
+					<pre><code data-trim>
+sources := foo.c bar.c baz.s ugh.h
+foo: $(sources)
+	cc $(filter %.c %.s,$(sources)) -o foo
+					</code></pre>
+					Reinventing the square wheel
+				</section>
+
+				<section>
+					<h2>Produce: the full power of Python</h2>
+					<pre><code data-trim>
+[]
+sources = foo.c bar.c baz.s ugh.h
+
+[foo]
+deps = %{sources}
+recipe = cc %{' '.join([f for f in sources.split() if f.endswith('.c') or f.endswith('.s')])}
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Minor Make annoyances fixed</h2>
+					<ul>
+						<li><code>%</code> vs. <code>$*</code> confusion</li>
+						<li><code>$$</code> in recipe</li>
+					</ul>
+				</section>
+
+				<section>
 					<h2>Design goal: low barrier for users</h2>
 					<ul>
 						<li>simple, intuitive syntax</li>
-						<li>one file, just drop it in <code>$PATH</code></li>
+						<li>easy to install: one file, just drop it in <code>$PATH</code></li>
 					</ul>
 					<aside class="notes">After all, I’m competing with Make here
 					which has the enormous advantage of coming with every Unix-like
@@ -224,10 +309,15 @@ recipe = wapiti label -m %{model} %{input} | sed -e 's/\t/ /g' &gt; %{target}
 				<section>
 					<section>
 						<h2>But wait, there is already…!</h2>
+						<ul>
+							<li>Rake? Too much syntax to remember, no multiple wildcards (just full-blown regex).</li>
+							<li>A-A-P? Too heavyweight, focused on software development, no multiple wildcards (?)</li>
+							<li>redo? No multiple wildcards</li>
+							<li>…</li>
+						</ul>
 					</section>
-					<!-- other runners-up: Waf? SCons? -->
 					<section>
-						<h2>Rake</h2>
+						<h2>Rake example</h2>
 						<pre><code data-trim>
 # Compile
 rule '.o' =&lt; ['.c'] do |t|
@@ -235,7 +325,7 @@ rule '.o' =&lt; ['.c'] do |t|
 end
 						</code></pre>
 						<ul>
-							<li>too much syntax</li>
+							<li>too much syntax to remember</li>
 							<li>no multiple wildcards (just regex)</li>
 						</ul>
 					</section>
@@ -254,10 +344,19 @@ end
 							<ul>
 								<li><code>argparse</code> for command-line options</li>
 								<li><code>configparser</code> and <code>shlex</code> for parsing Producefiles</li>
+								<li><code>eval</code> for evaluating Python expressions</li>
 								<li><code>subprocess</code> for executing recipes</li>
 								<li><code>logging</code> for info and debugging</li>
 							</ul>
 						</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Greatest (i.e. coolest) challenges</h2>
+					<ul>
+						<li>interplay of <code>%{wildcards}</code> and <code>%{"expressions"}</code></li>
+						<li>the build algorithm</li>
 					</ul>
 				</section>
 
@@ -331,6 +430,21 @@ def build(target):
 						<p>The time of a missing file is the time of its newest direct dependency (or <code>0</code> if none).</p>
 						<p>The time of an existing file is its last-modified time.</p>
 					</section>
+				</section>
+
+				<section>
+					<h2>#TODO</h2>
+					<ul>
+						<li>parallel building</li>
+						<li>includes</li>
+						<li>tweaking options for fooling the build algorithm</li>
+						<li>…</li>
+					</ul>
+				</section>
+
+				<section><!-- TODO put some nice picture here -->
+					<h2>Give it a try!</h2>
+					<a href="https://github.com/texttheater/produce/">https://github.com/texttheater/produce/</a>
 				</section>
 			</div>
 
