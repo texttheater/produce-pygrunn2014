@@ -85,10 +85,10 @@
 				<section>
 					<h2>What’s great about Makefiles</h2>
 					<ul>
-						<li>power of shell scripts + dependency management</li>
-						<li>file name wildcards: abstract over multiple objects/documents/experiments…</li>
-						<li>declarative &rarr; self-documenting</li>
-						<li>widespread &rarr; suitable for distribution and replication</li>
+						<li class="fragment">power of shell scripts + dependency management</li>
+						<li class="fragment">file name wildcards: abstract over multiple objects/documents/experiments…</li>
+						<li class="fragment">declarative &rarr; self-documenting</li>
+						<li class="fragment">widespread &rarr; suitable for distribution and replication</li>
 					</ul>
 				</section>
 
@@ -268,7 +268,6 @@ sources := foo.c bar.c baz.s ugh.h
 foo: $(sources)
 	cc $(filter %.c %.s,$(sources)) -o foo
 					</code></pre>
-					Reinventing the square wheel
 				</section>
 
 				<section>
