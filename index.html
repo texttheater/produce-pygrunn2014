@@ -86,7 +86,7 @@
 					<h2>What’s great about Makefiles</h2>
 					<ul>
 						<li class="fragment">power of shell scripts + dependency management</li>
-						<li class="fragment">file name wildcards: abstract over multiple objects/documents/experiments…</li>
+						<li class="fragment">target wildcards: abstract over multiple objects/documents/experiments…</li>
 						<li class="fragment">declarative &rarr; self-documenting</li>
 						<li class="fragment">widespread &rarr; suitable for distribution and replication</li>
 					</ul>
@@ -98,8 +98,7 @@
 						<li>arcane syntax</li>
 						<li>wildcards quite limited</li>
 					</ul>
-					<p>&nbsp;</p>
-					<p>Produce to the rescue!</p>
+					<p><b>Produce to the rescue!</b></p>
 				</section>
 
 				<section>
@@ -234,7 +233,7 @@ recipe = wapiti label -m %{model} %{input} &gt; %{target}
 				</section>
 
 				<section>
-					<h2>Make: counterintuitive declarations (special targets)</h2>
+					<h2>Make: counterintuitive declarations</h2>
 					<pre><code data-trim>
 .PHONY: clean
 clean:
@@ -249,7 +248,7 @@ clean:
 type = task
 recipe = rm *.o temp
 					</code></pre>
-					<ul>
+					<!--<ul>
 						<li class="fragment">attributes with special meaning:
 						<code>target</code>, <code>cond</code>, <code>deps</code>,
 						<code>dep.*</code>, <code>shell</code>, <code>recipe</code>,
@@ -258,7 +257,7 @@ recipe = rm *.o temp
 						(default) or <code>task</code></li>
 						<li class="fragment">without special meaning: values assigned by
 						matching or explicitly</li>
-					</ul>
+					</ul>-->
 				</section>
 
 				<section>
