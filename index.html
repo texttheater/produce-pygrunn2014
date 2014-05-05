@@ -291,25 +291,22 @@ recipe = cc %{' '.join([f for f in sources.split() \
 				</section>
 
 				<section>
-					<h2>Design goal: low barrier for users</h2>
-					<ul>
-						<li>simple, intuitive syntax</li>
-						<li>easy to install: one file, just drop it in <code>$PATH</code></li>
-					</ul>
-					<aside class="notes">After all, I’m competing with Make here
-					which has the enormous advantage of coming with every Unix-like
-					system.</aside>
-				</section>
-
-				<section>
-					<h2>Design goal: do one thing, and do it well</h2>
-					<ul>
-						<li>thin layer over shell code</li>
-						<li>don’t be a framework</li>
-					</ul>
-					<aside class="notes">After all, I’m competing with Make here
-					which has the enormous advantage of coming with every Unix-like
-					system.</aside>
+					<h2>Design goals</h2>
+					<ol>
+						<li class="fragment">killer feature: multiple wildcards</li>
+						<li class="fragment">low barrier for users
+						<ul>
+							<li>intuitive syntax</li>
+							<li>easy to install: one file, drop it in <code>$PATH</code></li>
+						</ul></li>
+						<li class="fragment">do one thing and do it well
+						<ul>
+							<li>shell for recipes</li>
+							<li>Python for dependency generation</li>
+							<li>thin wrapper for Producefile syntax and dependency management</li>
+						</ul></li>
+						<li class="fragment">low development cost</li<>
+					</ol>
 				</section>
 
 				<section>
@@ -335,11 +332,6 @@ end
 							<li>no multiple wildcards (just regex)</li>
 						</ul>
 					</section>
-				</section>
-
-				<section>
-					<h2>Design goal: low development cost</h2>
-					Should not take too much of my time…
 				</section>
 
 				<section>
