@@ -138,9 +138,10 @@ recipe = cc -o %{target} %{o}
 					<h2>Make: only first prerequisite named</h2>
 					<pre><code data-trim>
 out/%.pos : out/%.pos.auto out/%.pos.corr
-	./src/scripts/apply_corrections $&lt; --corrections out/$*.pos.corr &gt; $@
+	./src/scripts/apply_corrections $&lt; \
+        --corrections out/$*.pos.corr &gt; $@
 					</code></pre>
-					DRY violation!
+					<p>DRY violation!</p>
 				</section>
 
 				<section>
@@ -155,7 +156,7 @@ recipe = ./src/scripts/apply_corrections %{auto} %{corr} &gt; %{target}
 
 				<section>
 					<h2>You don’t <em>have</em> to name them</h2><!-- FIXME continuation lines not marked up by highlight.js -->
-					<pre><code data-trim>
+					<pre><code class="produce " data-trim>
 [%{name}.pdf]
 deps = %{name}.tex bibliography.bib
 recipe =
@@ -190,7 +191,8 @@ $(OUTPUT)%.pos : $(OUTPUT)%.pos.noncorr $(OUTPUT)%.db $(BOWS_TAGS)
 					<h2>Make: a single wildcard</h2>
 					<pre><code data-trim>
 .SECONDEXPANSION:
-out/%.labeled : out/$$(subst test,train,$$(subst dev,train,$$*)).model out/$$(basename $$*).feat
+out/%.labeled : out/$$(subst test,train,$$(subst dev,train,$$*)).model \
+                out/$$(basename $$*).feat
         wapiti label -m $< out/$(basename $*).feat > $@
 					</code></pre>
 					<aside class="notes">after getting this to work, you feel smart,
@@ -275,7 +277,8 @@ sources = foo.c bar.c baz.s ugh.h
 
 [foo]
 deps = %{sources}
-recipe = cc %{' '.join([f for f in sources.split() if f.endswith('.c') or f.endswith('.s')])}
+recipe = cc %{' '.join([f for f in sources.split() \
+        if f.endswith('.c') or f.endswith('.s')])}
 					</code></pre>
 				</section>
 
