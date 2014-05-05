@@ -250,12 +250,14 @@ type = task
 recipe = rm *.o temp
 					</code></pre>
 					<ul>
-						<li>with special meaning: <code>target</code>, <code>cond</code>,
-						<code>deps</code>, <code>dep.*</code>, <code>type</code></li>
-						<li><code>type</code> is <code>file</code> (default) or
-						<code>task</code></li>
-						<li>without special meaning: values assigned by matching
-						or explicitly</li>
+						<li class="fragment">attributes with special meaning:
+						<code>target</code>, <code>cond</code>, <code>deps</code>,
+						<code>dep.*</code>, <code>shell</code>, <code>recipe</code>,
+						<code>type</code></li>
+						<li class="fragment"><code>type</code> is <code>file</code>
+						(default) or <code>task</code></li>
+						<li class="fragment">without special meaning: values assigned by
+						matching or explicitly</li>
 					</ul>
 				</section>
 
@@ -301,37 +303,12 @@ recipe = cc %{' '.join([f for f in sources.split() \
 						</ul></li>
 						<li class="fragment">do one thing and do it well
 						<ul>
-							<li>shell for recipes</li>
+							<li>any scripting language for recipes</li>
 							<li>Python for dependency generation</li>
 							<li>thin wrapper for Producefile syntax and dependency management</li>
 						</ul></li>
 						<li class="fragment">low development cost</li<>
 					</ol>
-				</section>
-
-				<section>
-					<section>
-						<h2>But wait, there is already…!</h2>
-						<ul>
-							<li>Rake? Too much syntax to remember, no multiple wildcards (just full-blown regex).</li>
-							<li>A-A-P? Too heavyweight, focused on software development, no multiple wildcards (?)</li>
-							<li>redo? No multiple wildcards</li>
-							<li>…</li>
-						</ul>
-					</section>
-					<section>
-						<h2>Rake example</h2>
-						<pre><code data-trim>
-# Compile
-rule '.o' =&lt; ['.c'] do |t|
-  sh "cc -c #{t.source}"
-end
-						</code></pre>
-						<ul>
-							<li>too much syntax to remember</li>
-							<li>no multiple wildcards (just regex)</li>
-						</ul>
-					</section>
 				</section>
 
 				<section>
@@ -351,14 +328,49 @@ end
 				</section>
 
 				<section>
-					<h2>Greatest (i.e. coolest) challenges</h2>
-					<ul>
-						<li>interplay of <code>%{wildcards}</code> and <code>%{"expressions"}</code></li>
-						<li>the build algorithm</li>
-					</ul>
+					<section>
+						<h2>Other build automation tools</h2>
+						<ul>
+							<li class="fragment">Ant, SCons, A-A-P…
+							<ul>
+								<li>define their own languages for recipes</li>
+								<li>designed with specific tasks in mind</li>
+							</ul></li>
+							<li class="fragment">Rake
+							<ul>
+								<li>Rakefile = Ruby script</li>
+								<li>too much syntax</li>
+							</ul></li>
+							<li class="fragment">redo
+							<ul>
+								<li>commendably minimal</li>
+							</ul></li>
+						</ul>
+						<p class="fragment">None of them support multiple wildcards.</p>
+					</section>
+					<section>
+						<h2>Rake example</h2>
+						<pre><code data-trim>
+# Compile
+rule '.o' =&lt; ['.c'] do |t|
+  sh "cc -c #{t.source}"
+end
+						</code></pre>
+						<ul>
+							<li>too much syntax to remember</li>
+							<li>no multiple wildcards (just regex)</li>
+						</ul>
+					</section>
 				</section>
 
 				<section>
+					<section>
+						<h2>Coolest challenges</h2>
+						<ul>
+							<li>interplay of <code>%{wildcards}</code> and <code>%{"expressions"}</code></li>
+							<li>the build algorithm</li>
+						</ul>
+					</section>
 					<section>
 						<h2>The build algorithm</h2>
 						<aside class="note">surprisingly, description not easy to find</aside>
@@ -431,12 +443,11 @@ def build(target):
 				</section>
 
 				<section>
-					<h2>#TODO</h2>
+					<h2># TODO</h2>
 					<ul>
 						<li>parallel building</li>
 						<li>includes</li>
 						<li>tweaking options for fooling the build algorithm</li>
-						<li>…</li>
 					</ul>
 				</section>
 
