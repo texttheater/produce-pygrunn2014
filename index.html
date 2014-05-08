@@ -68,18 +68,18 @@
 
 				<section>
 					<h2>Build automation: the classic case</h2>
-					<img src="img/compiling.png"/>
+					<img src="img/compiling.png" alt="example dependency chart for compiling a C program" />
 				</section>
 
 				<section>
 					<h2>Build automation: NLP pipeline</h2>
-					<p><img src="img/pipeline.png"/></p>
-					<p><a href="http://gmb.let.rug.nl/"><img src="img/gmb_logo.png"/></a></p>
+					<p><img src="img/pipeline.png" alt="example dependency chart for running an NLP pipeline" /></p>
+					<p><a href="http://gmb.let.rug.nl/"><img src="img/gmb_logo.png" alt="Groningen Meaning Bank logo" /></a></p>
 				</section>
 
 				<section>
 					<h2>Build automation: running machine learning experiments</h2>
-					<img src="img/ml.png"/>
+					<img src="img/ml.png" alt="example dependency chart for running machine learning experiments" />
 				</section>
 
 				<section>
@@ -193,7 +193,7 @@ $(OUTPUT)%.pos : $(OUTPUT)%.pos.noncorr $(OUTPUT)%.db $(BOWS_TAGS)
 .SECONDEXPANSION:
 out/%.labeled : out/$$(subst test,train,$$(subst dev,train,$$*)).model \
                 out/$$(basename $$*).feat
-        wapiti label -m $< out/$(basename $*).feat > $@
+        wapiti label -m $&lt; out/$(basename $*).feat > $@
 					</code></pre>
 					<aside class="notes">after getting this to work, you feel smart,
 					and hopefully also miserable about the brain cycles wasted</aside>
@@ -306,7 +306,7 @@ recipe = cc %{' '.join([f for f in sources.split() \
 							<li>Python for dependency generation</li>
 							<li>thin wrapper for Producefile syntax and dependency management</li>
 						</ul></li>
-						<li class="fragment">low development cost</li<>
+						<li class="fragment">low development cost</li>
 					</ol>
 				</section>
 
@@ -453,7 +453,7 @@ def build(target):
 
 				<section>
 					<h2>Come get some Produce!</h2>
-					<img src="img/produce.jpg" width=75% />
+					<img src="img/produce.jpg" style="width: 75%" alt="fruit and vegetables on a stand" />
 					<a href="https://github.com/texttheater/produce/">https://github.com/texttheater/produce/</a>
 					<p><small>Photo courtesy of <a href="https://www.flickr.com/photos/nakrnsm/3815441846">Patrick Feller</a>, <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a></small></p>
 				</section>
